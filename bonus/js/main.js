@@ -6,13 +6,14 @@ var app = new Vue(
 	{
 		el: '#app',
 		data: {
-			searchInput       : '',
-			tmdbApiUrl        : 'https://api.themoviedb.org/3/search/movie?api_key=9527ee72ac0381373914837a93bbd7d4',
-			tmdbLangApiUrl    : 'https://api.themoviedb.org/3/configuration/languages?api_key=9527ee72ac0381373914837a93bbd7d4',
-			tmdbLangList      : [],
-			tmdbPosterBaseUrl : 'https://image.tmdb.org/t/p/original',
-			tmdbLangQuery     : 'it-IT',
-			tmdbList          : [],
+			searchInput   : '',
+			tmdbSearchUrl : 'https://api.themoviedb.org/3/search/',
+			tmdbLangUrl   : 'https://api.themoviedb.org/3/configuration/languages',
+			tmdbPosterUrl : 'https://image.tmdb.org/t/p/original/',
+			tmdbApiKey    : '9527ee72ac0381373914837a93bbd7d4',
+			tmdbLang      : 'it-IT',
+			tmdbLangList  : [],
+			tmdbList      : [],
 			tmdbListIsReady   : false
 		},
 		methods: {
@@ -25,31 +26,42 @@ var app = new Vue(
 				}
 			},
 			getTmdbData(query) {
+				/**
+				 *   MOVIE				TV
+				 * ! title				name
+				 * ! original_title		original_name
+				 * ! release_date		first_air_date
+				 *   original_language	original_language
+				 *   vote_average		vote_average
+				 */
+				const movieData = axios.get(this.tmdbSearchRequest('movie')+'&query='+query);
+				const tvData    = axios.get(this.tmdbSearchRequest('tv')   +'&query='+query);
+				const langData  = axios.get(this.tmdbLangUrl+'?api_key='+this.tmdbApiKey);
 				axios
-					.get(this.tmdbApiUrl+'&language='+this.tmdbLangQuery+'&query='+query)
-					.then((resp)=>{
-						this.tmdbList = resp.data.results;
-						this.tmdbListIsReady = true;
-						console.log(this.tmdbList);
-					});
+					.all([movieData,tvData,langData])
+					.then(
+						axios.spread((...resps)=>{
+							this.tmdbList = resps[0].data.results.concat(resps[1].data.results);
+							this.tmdbList.forEach((el)=>{
+								resps[2].data.forEach((l)=>{
+									if (l.iso_639_1 == el.original_language) el.original_language = l.english_name;
+								});
+							});
+							// console.log(this.tmdbList);
+							this.tmdbListIsReady = true;
+						})
+					);
 			},
-			getLang(original_language) {
-				let lang = '';
-				this.tmdbLangList.forEach((el)=>{
-					if (el.iso_639_1 == original_language) lang = el.english_name;
-				});
-				return lang;
+			tmdbSearchRequest(scope) { // scope = movie,tv
+				return this.tmdbSearchUrl+scope+'?api_key='+this.tmdbApiKey+'&language='+this.tmdbLang;
 			},
-			getLangList() {
-				axios
-					.get(this.tmdbLangApiUrl)
-					.then((resp)=>{
-						this.tmdbLangList = resp.data;
-					});
+			getPosterSrc(item) {
+				if (item.poster_path) return this.tmdbPosterUrl+item.poster_path;
+				else return 'img/poster-holder.jpg';
 			},
 			getYear(release_date){
-				return release_date.split('-')[0];
-
+				if (release_date && release_date.includes('-')) return release_date.split('-')[0];
+				else return '';
 			},
 			getRatingStyle(vote_average) {
 				return '--rating: '+vote_average+';';
@@ -67,7 +79,6 @@ var app = new Vue(
 		computed: {
 		},
 		created() {
-			this.getLangList();
 		},
 		mounted() {
 			this.$refs.search1.focus();

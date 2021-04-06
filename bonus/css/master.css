@@ -30,6 +30,9 @@ a {
 a:hover {
 	color: var(--green);
 }
+ul {
+	list-style: none;
+}
 .card.intro {
 	height: unset;
 }
@@ -77,8 +80,7 @@ a:hover {
 **  ITEM DISPLAY PANEL
 */
 .card {
-	/* position: relative; */
-	/* height: 240px; */
+	width: 160px;
 	padding: 10px;
 	background-color: var(--bg_light_blue);
 	border-radius: 3px;
@@ -88,19 +90,22 @@ a:hover {
 	/* border: 1px dashed red; */
 }
 .item_display .item_box img {
-	width: 100px;
+	width: 100%;
 }
 .item_display .item_box .item_title {
 	margin: 15px 0;
-	width: 100px;
+	width: 100%;
 }
 .item_display .item_box .item_info {
-	width: 100px;
+	width: 100%;
 	/* border: 1px dashed red; */
 }
 .item_display .item_box .item_info1 {
 	color: var(--info_middle_grey);
 	margin-bottom: 5px;
+}
+img.flag {
+	width: 50px;
 }
 /* rating stars  */
 .rating_bar {

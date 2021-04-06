@@ -7,7 +7,7 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 		<!-- *** [ FONT AWESOME ] *** -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/> -->
 		<!-- *** [ MY CSS ] *** -->
 		<link rel="stylesheet" href="css/master.css">
 		<!-- *** [ Vue.js ] *** -->
@@ -24,7 +24,7 @@
 
 				<!-- ** HEADER ** -->
 				<div class="header flex-row-cv fx-row-between">
-					<img src="img/Spotify_logo.png" alt="">
+					<img src="img/boolflix.png" alt="">
 					<div class="search_box">
 						<!-- <label for="search1">Cerca</label> -->
 						<input ref="search1" placeholder="Cerca un film" 
@@ -39,25 +39,19 @@
 					<div v-for="item in tmdbList" v-if="isViewable(item)">
 						<div class="item_box">
 							<div class="card flex-col">
-								<img :src="tmdbPosterBaseUrl+'/'+item.poster_path" :alt="item.title">
-								<div class="item_title fx-grow-1 txt_1" :class="{selected:isSelected(item.title),sorted:isSorted('title')}">
-									{{item.title}}
-								</div>
-								<div class="item_info flex-col-co">
-									<div class="item_info1 txt_2" :class="{selected:isSelected(item.original_title),sorted:isSorted('original_title')}">
-										{{item.original_title}}
-									</div>
-									<div class="item_info1 txt_2" :class="{selected:isSelected(item.original_title),sorted:isSorted('original_title')}">
-										{{getYear(item.release_date)}}
-									</div>
-									<div class="item_info1 txt_2" :class="{selected:isSelected(item.original_language),sorted:isSorted('original_language')}">
-										{{getLang(item.original_language)}}
-									</div>
-									<div :class="{selected:isSelected(item.vote_average),sorted:isSorted('vote_average')}">
-										<!-- {{getRatingStyle(item.vote_average)}} -->
-										<div class="rating_bar" :style="getRatingStyle(item.vote_average)"></div>
-									</div>
-								</div>
+								<img :src="getPosterSrc(item)" :alt="(item.title) ? item.title: item.name">
+								<div class="item_title fx-grow-1 txt_1">{{(item.title) ? item.title: item.name}}</div>
+								<ul class="item_info flex-col-co txt_2">
+									<li class="item_info1">{{(item.original_title) ? item.original_title : item.original_name}}</li>
+									<li class="item_info1">{{(item.release_date) ? getYear(item.release_date) : getYear(item.first_air_date)}}</li>
+									<li class="item_info1">{{item.original_language}}</li>
+									<li class="item_info1">
+										<!-- <img :src="'https://unpkg.com/language-icons/icons/'+item.original_language+'.svg'"> -->
+										<!-- <img class="flag" :src="'https://www.unknown.nu/flags/images/'+item.original_language+'-100'"> -->
+									</li>
+									<!-- {{getRatingStyle(item.vote_average)}} -->
+									<li class="rating_bar" :style="getRatingStyle(item.vote_average)"></li>
+								</ul>
 							</div>
 						</div>
 					</div>
