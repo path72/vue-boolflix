@@ -100,7 +100,7 @@ ul {
 	width: 100%;
 	/* border: 1px dashed red; */
 }
-.item_display .item_box .item_info1 {
+.item_display .item_box .item_detail {
 	color: var(--info_middle_grey);
 	margin-bottom: 5px;
 }
@@ -110,12 +110,11 @@ img.flag {
 /* rating stars  */
 .rating_bar {
 	--fraction: calc(var(--rating)/10*100%);
-	display: inline-block;
 	font-size: 25px;
 }
 .rating_bar::before {
 	content: '★★★★★';
-	background: linear-gradient(90deg, var(--purple) var(--fraction), var(--realwhite) var(--fraction));
+	background: linear-gradient(90deg, var(--purple) var(--fraction), var(--white) var(--fraction));
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }

@@ -40,15 +40,15 @@
 						<div class="item_box">
 							<div class="card flex-col">
 								<img :src="getPosterSrc(item)" :alt="(item.title) ? item.title: item.name">
-								<div class="item_title fx-grow-1 txt_1">{{(item.title) ? item.title: item.name}}</div>
+								<div class="item_title fx-grow-1 txt_1">{{getTitles(item).title}}</div>
 								<ul class="item_info flex-col-co txt_2">
-									<li class="item_info1">{{(item.original_title) ? item.original_title : item.original_name}}</li>
-									<li class="item_info1">{{(item.release_date) ? getYear(item.release_date) : getYear(item.first_air_date)}}</li>
-									<li class="item_info1">{{item.original_language}}</li>
-									<li class="item_info1">
+									<li class="item_detail" v-if="getTitles(item).originalTitle">{{getTitles(item).originalTitle}}</li>
+									<li class="item_detail" v-if="getYear(item)">{{getYear(item)}}</li>
+									<li class="item_detail" v-if="item.original_language">{{item.original_language}}</li>
+									<!-- <li class="item_info1"> -->
 										<!-- <img :src="'https://unpkg.com/language-icons/icons/'+item.original_language+'.svg'"> -->
 										<!-- <img class="flag" :src="'https://www.unknown.nu/flags/images/'+item.original_language+'-100'"> -->
-									</li>
+									<!-- </li> -->
 									<!-- {{getRatingStyle(item.vote_average)}} -->
 									<li class="rating_bar" :style="getRatingStyle(item.vote_average)"></li>
 								</ul>

@@ -7,12 +7,11 @@ var app = new Vue(
 		el: '#app',
 		data: {
 			searchInput   : '',
-			tmdbSearchUrl : 'https://api.themoviedb.org/3/search/',
+			tmdbSearchUrl : 'https://api.themoviedb.org/3/search',
 			tmdbLangUrl   : 'https://api.themoviedb.org/3/configuration/languages',
-			tmdbPosterUrl : 'https://image.tmdb.org/t/p/original/',
+			tmdbPosterUrl : 'https://image.tmdb.org/t/p/original',
 			tmdbApiKey    : '9527ee72ac0381373914837a93bbd7d4',
 			tmdbLang      : 'it-IT',
-			tmdbLangList  : [],
 			tmdbList      : [],
 			tmdbListIsReady   : false
 		},
@@ -53,14 +52,23 @@ var app = new Vue(
 					);
 			},
 			tmdbSearchRequest(scope) { // scope = movie,tv
-				return this.tmdbSearchUrl+scope+'?api_key='+this.tmdbApiKey+'&language='+this.tmdbLang;
+				return this.tmdbSearchUrl+'/'+scope+'?api_key='+this.tmdbApiKey+'&language='+this.tmdbLang;
 			},
 			getPosterSrc(item) {
-				if (item.poster_path) return this.tmdbPosterUrl+item.poster_path;
+				if (item.poster_path) return this.tmdbPosterUrl+'/'+item.poster_path;
 				else return 'img/poster-holder.jpg';
 			},
-			getYear(release_date){
-				if (release_date && release_date.includes('-')) return release_date.split('-')[0];
+			getTitles(item) {
+				let title = 'title', originalTitle = '';
+				if (!item.title) title = 'name';
+				if (item['original_'+title] != item[title]) originalTitle = item['original_'+title];
+				return {'title': item[title], originalTitle }
+			},
+			getYear(item){
+				let release = 'release_date';
+				if (!item.release_date) release = 'first_air_date';   
+				if (item[release] && item[release].includes('-'))
+					 return item[release].split('-')[0];
 				else return '';
 			},
 			getRatingStyle(vote_average) {
