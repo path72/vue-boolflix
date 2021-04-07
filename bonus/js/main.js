@@ -6,14 +6,16 @@ var app = new Vue(
 	{
 		el: '#app',
 		data: {
-			searchInput   : '',
-			tmdbSearchUrl : 'https://api.themoviedb.org/3/search',
-			tmdbLangUrl   : 'https://api.themoviedb.org/3/configuration/languages',
-			tmdbPosterUrl : 'https://image.tmdb.org/t/p/original',
-			tmdbApiKey    : '9527ee72ac0381373914837a93bbd7d4',
-			tmdbLang      : 'it-IT',
-			tmdbList      : [],
-			tmdbListIsReady   : false
+			searchInput			: '',
+			tmdbSearchUrl		: 'https://api.themoviedb.org/3/search',
+			tmdbLangUrl			: 'https://api.themoviedb.org/3/configuration/languages',
+			tmdbPosterFullUrl	: 'https://image.tmdb.org/t/p/original',
+			tmdbPosterThumbUrl	: 'https://image.tmdb.org/t/p/w342',
+			tmdbApiKey			: '9527ee72ac0381373914837a93bbd7d4',
+			tmdbLang			: 'it-IT',
+			tmdbList			: [],
+			tmdbListIsReady		: false,
+			overCard: false
 		},
 		methods: {
 			getResponse() {
@@ -27,35 +29,36 @@ var app = new Vue(
 			getTmdbData(query) {
 				/**
 				 *   MOVIE				TV
-				 * ! title				name
-				 * ! original_title		original_name
-				 * ! release_date		first_air_date
+				 * ! title				name			!
+				 * ! original_title		original_name	!
+				 * ! release_date		first_air_date	!
 				 *   original_language	original_language
+				 *   overview			overview
 				 *   vote_average		vote_average
 				 */
-				const movieData = axios.get(this.tmdbSearchRequest('movie')+'&query='+query);
-				const tvData    = axios.get(this.tmdbSearchRequest('tv')   +'&query='+query);
-				const langData  = axios.get(this.tmdbLangUrl+'?api_key='+this.tmdbApiKey);
+				const movieData = axios.get(this.tmdbSearchUrl+'/movie', this.getParams('api_key','language','query'));
+				const tvData    = axios.get(this.tmdbSearchUrl+'/tv',    this.getParams('api_key','language','query'));
 				axios
-					.all([movieData,tvData,langData])
+					.all([movieData,tvData])
 					.then(
 						axios.spread((...resps)=>{
 							this.tmdbList = resps[0].data.results.concat(resps[1].data.results);
-							this.tmdbList.forEach((el)=>{
-								resps[2].data.forEach((l)=>{
-									if (l.iso_639_1 == el.original_language) el.original_language = l.english_name;
-								});
-							});
 							// console.log(this.tmdbList);
 							this.tmdbListIsReady = true;
 						})
 					);
 			},
-			tmdbSearchRequest(scope) { // scope = movie,tv
-				return this.tmdbSearchUrl+'/'+scope+'?api_key='+this.tmdbApiKey+'&language='+this.tmdbLang;
+			getParams(...params) {
+				let obj = {params: {}};
+				params.forEach((el)=>{
+					if (el == 'api_key')  obj.params[el] = this.tmdbApiKey;
+					if (el == 'language') obj.params[el] = this.tmdbLang;
+					if (el == 'query')    obj.params[el] = this.searchInput;
+				});
+				return obj;
 			},
 			getPosterSrc(item) {
-				if (item.poster_path) return this.tmdbPosterUrl+'/'+item.poster_path;
+				if (item.poster_path) return this.tmdbPosterThumbUrl+'/'+item.poster_path;
 				else return 'img/poster-holder.jpg';
 			},
 			getTitles(item) {
@@ -71,17 +74,11 @@ var app = new Vue(
 					 return item[release].split('-')[0];
 				else return '';
 			},
+			getFlagSrc(item) {
+				return 'https://www.unknown.nu/flags/images/'+item.original_language+'-100';
+			},
 			getRatingStyle(vote_average) {
 				return '--rating: '+vote_average+';';
-			},
-			isViewable(item) {
-				return true;
-			},
-			isSelected(title) {
-				return false;
-			},
-			isSorted(title) {
-				return false;
 			}
 		},
 		computed: {

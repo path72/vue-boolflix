@@ -6,8 +6,6 @@
 		<!-- *** [ FONTS ] *** -->
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-		<!-- *** [ FONT AWESOME ] *** -->
-		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/> -->
 		<!-- *** [ MY CSS ] *** -->
 		<link rel="stylesheet" href="css/master.css">
 		<!-- *** [ Vue.js ] *** -->
@@ -20,44 +18,45 @@
 	</head>
 	<body>
 
-			<div id="app">
+		<div id="app">
 
-				<!-- ** HEADER ** -->
-				<div class="header flex-row-cv fx-row-between">
-					<img src="img/boolflix.png" alt="">
-					<div class="search_box">
-						<!-- <label for="search1">Cerca</label> -->
-						<input ref="search1" placeholder="Cerca un film" 
-								v-model="searchInput"
-								@keyup.enter="getResponse">
-						<button @click="getResponse">Cerca</button>
-					</div>
+			<!-- ** HEADER ** -->
+			<div class="header flex-row-cv fx-row-between">
+				<img src="img/boolflix.png" alt="">
+				<div class="search_box">
+					<!-- <label for="search1">Cerca</label> -->
+					<input ref="search1" placeholder="Cerca un film" 
+							v-model="searchInput"
+							@keyup.enter="getResponse">
+					<button @click="getResponse">Cerca</button>
 				</div>
+			</div>
 
-				<!-- ** ITEM DISPLAY PANEL ** -->
-				<div class="item_display flex-row-co fx-wrap" v-if="tmdbListIsReady">
-					<div v-for="item in tmdbList" v-if="isViewable(item)">
-						<div class="item_box">
-							<div class="card flex-col">
-								<img :src="getPosterSrc(item)" :alt="(item.title) ? item.title: item.name">
-								<div class="item_title fx-grow-1 txt_1">{{getTitles(item).title}}</div>
-								<ul class="item_info flex-col-co txt_2">
-									<li class="item_detail" v-if="getTitles(item).originalTitle">{{getTitles(item).originalTitle}}</li>
-									<li class="item_detail" v-if="getYear(item)">{{getYear(item)}}</li>
-									<li class="item_detail" v-if="item.original_language">{{item.original_language}}</li>
-									<!-- <li class="item_info1"> -->
-										<!-- <img :src="'https://unpkg.com/language-icons/icons/'+item.original_language+'.svg'"> -->
-										<!-- <img class="flag" :src="'https://www.unknown.nu/flags/images/'+item.original_language+'-100'"> -->
-									<!-- </li> -->
-									<!-- {{getRatingStyle(item.vote_average)}} -->
-									<li class="rating_bar" :style="getRatingStyle(item.vote_average)"></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div> 
+			<!-- ** ITEM DISPLAY PANEL ** -->
+			<div class="item_display flex-row-co fx-wrap" v-if="tmdbListIsReady">
+				<div class="item_box" v-for="(item,index) in tmdbList" @mouseenter="overCard = 'o'+index" @mouseleave="overCard = false">
+					<img class="poster" :src="getPosterSrc(item)" :alt="(item.title) ? item.title: item.name">
+					<transition name="item_info_fade">
+						<div class="item_info flex-col-co" v-if="overCard == 'o'+index">
+							<ul class="fx-grow-1">
+								<li class="txt_1">{{getTitles(item).title}}</li>
+								<li class="txt_2" v-if="getTitles(item).originalTitle"><em>Titolo originale: </em>{{getTitles(item).originalTitle}}</li>
+							</ul>
+							<ul>
+								<li class="txt_3" v-if="item.overview"><em>Sinossi</em></li>
+								<li class="txt_3 overview" v-if="item.overview">
+									<div class="hide_scroll">{{item.overview}}</div>
+								</li>
+								<li class="txt_2" v-if="getYear(item)">{{getYear(item)}}</li>
+								<li><img class="flag" :src="getFlagSrc(item)"></li>
+								<li class="rating_bar" :style="getRatingStyle(item.vote_average)"></li>
+							</ul>
+						</div> <!-- item_info -->
+					</transition>
+				</div> <!-- item_box v-for: item -->
+			</div> <!-- item_display -->
 
-			</div> <!-- Vue.js main instance #app -->
+		</div> <!-- Vue.js main instance #app -->
 
 
 		<!-- *** [ MY JS ] *** -->
