@@ -11,6 +11,8 @@
 	--white            : #eaeaea;
 	/* --black            : #3c3c3c; */
 	--black            : #000000;
+	--black90          : #000000E6;
+	--black80          : #000000CC;
 	--purple           : #b91450;
 	--red				: #db1a27;
 	--red2				: #ec323e;
@@ -77,8 +79,8 @@ ul {
 }
 .item_box {
 	position: relative;
-	width: 220px;
-	height: 330px;
+	width: 270px;
+	/* height: 330px; */
 	border-radius: 5px;
 	overflow: hidden;
 	text-align: center;
@@ -96,11 +98,11 @@ ul {
 	width: 100%;
 	height: 100%;
 	padding: 10px;
-	background-color: var(--bg_dark_grey90);
+	background-color: var(--black80);
 	/* border: 1px dashed red; */
 }
-.item_display .item_box .item_info li:not(.overview) {
-	margin-top: 8px;
+.item_display .item_box .item_info li:not(.overview):not(.cast) {
+	margin-top: 10px;
 }
 .item_display .item_box .item_info li.overview {
 	height: 120px;
