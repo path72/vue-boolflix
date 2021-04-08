@@ -8,7 +8,6 @@ var app = new Vue(
 		data: {
 			searchInput			: '',
 			tmdbSearchUrl		: 'https://api.themoviedb.org/3/search',
-			tmdbLangUrl			: 'https://api.themoviedb.org/3/configuration/languages',
 			tmdbGenreUrl		: 'http://api.themoviedb.org/3/genre',
 			tmdbMovieUrl		: 'https://api.themoviedb.org/3/movie',
 			tmdbTvUrl			: 'https://api.themoviedb.org/3/tv',
@@ -28,16 +27,16 @@ var app = new Vue(
 				if (this.searchInput && this.searchInput.trim()) {
 					this.searchInput = this.searchInput.trim().replace(/\s+/g,'+');
 					// console.log(this.searchInput);
-					this.getTmdbData(this.searchInput);
+					this.getTmdbData();
 					this.searchInput = '';
 				}
 			},
-			getTmdbData(query) {
+			getTmdbData() {
 				/**
 				 *   	MOVIE				TV
 				 * !	title				name				!
 				 * 	 	genre_name			genre_name			new
-				 * 	 	cast5				cast5				new
+				 * 	 	cast				cast				new
 				 * ! 	original_title		original_name		!
 				 * ! 	release_date		first_air_date		!
 				 *   	original_language	original_language
@@ -53,9 +52,9 @@ var app = new Vue(
 							let mov = resps[0].data.results;
 							let tvs = resps[1].data.results;
 							this.addGenreNames(mov,this.tmdbGenreList[0]); 
-							this.addCastNames(mov,'mov');
+							this.addCastNames(mov,'movie');
 							this.addGenreNames(tvs,this.tmdbGenreList[1]); 
-							this.addCastNames(tvs,'tvs');
+							this.addCastNames(tvs,'tv');
 							this.tmdbList = [...mov,...tvs];
 							// console.log(this.tmdbList);
 							this.tmdbListIsReady = true;
@@ -80,23 +79,24 @@ var app = new Vue(
 					el.genre_names = gen;
 				}); 
 			},
-			addCastNames(itemList,product){
-				switch (product) {
-					case 'mov': url = this.tmdbMovieUrl; break;
-					case 'tvs': url = this.tmdbTvUrl;    break;
+			addCastNames(itemList,media_type){
+				let url;
+				switch (media_type) {
+					case 'movie': url = this.tmdbMovieUrl; break;
+					case 'tv'   : url = this.tmdbTvUrl;    break;
 				}
 				itemList.forEach((el)=>{
 					axios
 						.get(url+'/'+el.id+'/credits', this.getParams('api_key','language'))
 						.then((resp)=>{
-							let c = resp.data.cast, list5 = [], i=0;
+							let c = resp.data.cast, list = [], i=0;
 							let len = (c.length >= this.castLength) ? this.castLength : c.length; 
-							while (list5.length < len-1) {
-								if (c[i].name && c[i].known_for_department=='Acting' && !list5.includes(c[i].name)) 
-									list5.push(c[i].name);
+							while (list.length < len-1) {
+								if (c[i].name && c[i].known_for_department=='Acting' && !list.includes(c[i].name)) 
+									list.push(c[i].name);
 								i++;
 							};
-							el.cast5 = list5;
+							el.cast = list;
 							this.tmdbCastIsReady = true;
 						});
 				});

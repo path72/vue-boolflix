@@ -34,16 +34,19 @@
 
 			<!-- ** ITEM DISPLAY PANEL ** -->
 			<div class="item_display flex-row-co fx-wrap" v-if="tmdbListIsReady && tmdbCastIsReady">
-				<div class="item_box" v-for="(item,index) in tmdbList" @mouseenter="overCard = 'o'+index" @mouseleave="overCard = false">
+				<div class="item_box" 
+						v-for="(item,index) in tmdbList"
+						@mouseenter="overCard = 'o'+index"
+						@mouseleave="overCard = false">
 					<img class="poster" :src="getPosterSrc(item)" :alt="(item.title) ? item.title: item.name">
 					<transition name="item_info_fade">
 						<div class="item_info flex-col-co" v-if="overCard == 'o'+index">
 							<ul class="fx-grow-1">
 								<li class="txt_1">{{getTitles(item).title}}</li>
-								<li class="txt_2" v-if="getTitles(item).originalTitle"><em>Titolo originale: </em>{{getTitles(item).originalTitle}}</li>
+								<li class="txt_2" v-if="getTitles(item).originalTitle"><em>Titolo originale:</em> {{getTitles(item).originalTitle}}</li>
 								<li class="txt_2" v-if="getListFromArray(item.genre_names)">{{getListFromArray(item.genre_names)}}</li>
-								<li class="txt_2" v-if="getListFromArray(item.cast5)"><em>Cast</em></li>
-								<li class="txt_3 cast" v-if="getListFromArray(item.cast5)">{{getListFromArray(item.cast5)}}</li>
+								<li class="txt_2" v-if="getListFromArray(item.cast)"><em>Cast</em></li>
+								<li class="txt_3 cast" v-if="getListFromArray(item.cast)">{{getListFromArray(item.cast)}}</li>
 							</ul>
 							<ul>
 								<li class="txt_2" v-if="item.overview"><em>Sinossi</em></li>

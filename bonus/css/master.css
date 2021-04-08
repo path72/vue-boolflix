@@ -108,7 +108,7 @@ ul {
 	height: 120px;
 	overflow: hidden;
 }
-.hide_scroll {
+.item_display .item_box .item_info li.overview .hide_scroll {
 	box-sizing:content-box;
 	width: 100%;
 	height: 100%;
@@ -128,6 +128,7 @@ ul {
 .rating_bar::before {
 	content: '★★★★★';
 	background: linear-gradient(90deg, var(--red) var(--fraction), var(--white) var(--fraction));
+	/* switch color between background and content */
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
