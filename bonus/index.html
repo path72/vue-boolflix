@@ -26,11 +26,11 @@
 					<img src="img/boolflix.png" alt="">
 				</div>
 				<div class="right_header flex-row-cv">
-					<div class="select_box" v-if="tmdbListIsReady">
+					<div class="select_box" v-if="tmdbListIsReady && tmdbList.length">
 						<label for="filterGenre">Filtra per genere</label>
 						<select id="filterGenre" v-model="filterGenreSelected" @change="filterGenre()">
 							<option value="">none</option>
-							<option v-for="filterGenre in tmdbMergedGenreList" :value="filterGenre">{{filterGenre}}
+							<option v-for="filterGenre in tmdbSearchGenreList" :value="filterGenre">{{filterGenre}}
 							</option>
 						</select>
 						<!-- <label for="filter1">Filtra per</label>
@@ -91,7 +91,7 @@
 				</div> <!-- item_box v-for: item -->
 			</div> <!-- item_display -->
 			<div class="no_item_msg" v-else>
-				<span class="txt_1">Nessun risultato</span>
+				<span class="txt_2">Nessun risultato da mostrare</span>
 			</div>
 
 		</div> <!-- Vue.js main instance #app -->

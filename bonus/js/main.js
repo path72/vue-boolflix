@@ -16,24 +16,25 @@ var app = new Vue(
 			tmdbApiKey			: '9527ee72ac0381373914837a93bbd7d4',
 			tmdbLang			: 'it-IT',
 			tmdbList			: [],
-			tmdbGenreList		: [[],[]], // [ [0] movie, [1] tv ]
-			tmdbMergedGenreList	: [],
+			tmdbGenreList		: [[],[]], 	// [ [0] movie, [1] tv ]
+			tmdbSearchGenreList	: [],
 			tmdbListIsReady		: false,
 			tmdbCastIsReady		: false,
 			overCard			: false,
-			castLength			: 5,
+			castLength			: 6,		// number of displayed cast members
 			filterGenreSelected	: '',
 			displayList			: [],
 			// filter1Selected		: '', 	// parameter1 selected for filter
 			// filter2Selected		: '',	// parameter2 selected for filter
 			// filterLists			: {}, 	// object with parameter1: [ parameter2 value list ]
-			// displayItems		: [],	// displayed (sortable) data
+			// displayItems			: [],	// displayed (sortable) data
 			// displayItemsAreReady: false,
 		},
 		methods: {
 			getResponse() {
 				if (this.searchInput && this.searchInput.trim()) {
 					this.filterGenreSelected = '';
+					this.tmdbSearchGenreList = [];
 					this.searchInput = this.searchInput.trim().replace(/\s+/g,'+');
 					// console.log(this.searchInput);
 					this.getTmdbData();
@@ -65,6 +66,8 @@ var app = new Vue(
 							this.addGenreNames(tvs,this.tmdbGenreList[1]); 
 							this.addCastNames(tvs,'tv');
 							this.tmdbList = [...mov,...tvs];
+
+							this.buildSearchedGenreList();
 
 							// l'organizzatore cognitivo preferito!
 							// this.buildFilterList(this.tmdbList); 
@@ -105,13 +108,12 @@ var app = new Vue(
 					axios
 						.get(url+'/'+el.id+'/credits', this.getParams('api_key','language'))
 						.then((resp)=>{
-							let c = resp.data.cast, list = [], i=0;
+							let c = resp.data.cast, list = [];
 							let len = (c.length >= this.castLength) ? this.castLength : c.length; 
-							while (list.length < len-1) {
-								if (c[i].name && c[i].known_for_department=='Acting' && !list.includes(c[i].name)) 
-									list.push(c[i].name);
-								i++;
-							};
+							for (let i=0; i<len; i++) {
+								if (!list.includes(c[i].name))
+									list.push(c[i].name+' ('+c[i].known_for_department+')');
+							}
 							el.cast = list;
 							this.tmdbCastIsReady = true;
 						});
@@ -128,11 +130,13 @@ var app = new Vue(
 				return {'title': item[title], originalTitle };
 			},
 			getListFromArray(array) {
-				let str = '';
-				array.forEach((el,index)=>{
-					str += el + ((index == array.length-1) ? '' : ', ');
-				});
-				return str;
+				if (array.length) {
+					let str = '';
+					array.forEach((el,index)=>{
+						str += el + ((index == array.length-1) ? '' : ', ');
+					});
+					return str;
+				}
 			},
 			getYear(item){
 				let release = 'release_date';
@@ -157,23 +161,21 @@ var app = new Vue(
 							this.tmdbGenreList[0] = resps[0].data.genres;
 							// console.log(this.tmdbGenreList[0]);
 							this.tmdbGenreList[1] = resps[1].data.genres;
-							// console.log(this.tmdbGenreList[1]);
-							this.mergedGenreList();
-							// console.log(this.tmdbMergedGenreList);						
+							// console.log(this.tmdbGenreList[1]);					
 						})
 					);
 			},
-			mergedGenreList() {
-				for (let i=0; i<this.tmdbGenreList.length; i++)
-					this.tmdbGenreList[i].forEach((el)=>{
-						if(!this.tmdbMergedGenreList.includes(el.name)) 
-							this.tmdbMergedGenreList.push(el.name); 					
-					});
-				this.tmdbMergedGenreList.sort();
+			buildSearchedGenreList() {
+				this.tmdbList.forEach((el)=>{
+				 	el.genre_names.forEach((gen)=>{
+						if (!this.tmdbSearchGenreList.includes(gen))
+						this.tmdbSearchGenreList.push(gen);
+					 });
+				});
 			},
 			filterGenre() {
 				if (this.filterGenreSelected) 
-					 this.displayList = this.displayList.filter((el)=> el.genre_names.includes(this.filterGenreSelected));
+					 this.displayList = this.tmdbList.filter((el)=> el.genre_names.includes(this.filterGenreSelected));
 				else this.displayList = this.tmdbList;
 			}
 			// buildFilterList(items) {
