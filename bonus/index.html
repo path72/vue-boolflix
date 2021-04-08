@@ -27,23 +27,17 @@
 				</div>
 				<div class="right_header flex-row-cv">
 					<div class="select_box" v-if="tmdbListIsReady && tmdbList.length">
-						<label for="filterGenre">Filtra per genere</label>
-						<select id="filterGenre" v-model="filterGenreSelected" @change="filterGenre()">
+						<label for="filter1">Filtra per</label>
+						<select id="filter1" v-model="filter1Selected" @change="filter1Selection()">
 							<option value="">none</option>
-							<option v-for="filterGenre in tmdbSearchGenreList" :value="filterGenre">{{filterGenre}}
+							<option v-for="filter1 in Object.keys(searchedFilters)" :value="filter1">{{cap(filter1)}}
 							</option>
 						</select>
-						<!-- <label for="filter1">Filtra per</label>
-						<select id="filter1" v-model="filter1Selected" @change="filter2Selected=''">
-							<option value="">none</option>
-							<option v-for="filter1 in Object.keys(filterLists)" :value="filter1">{{cap(filter1)}}
-							</option>
-						</select>
-						<select v-model="filter2Selected" v-if="filter1Selected">
+						<select v-model="filter2Selected" @change="filter2Selection()" v-if="filter1Selected">
 							<option value="">Filtra per {{cap(filter1Selected)}}</option>
-							<option v-for="filter2 in filterLists[filter1Selected]" :value="filter2">{{filter2}}
+							<option v-for="filter2 in searchedFilters[filter1Selected]" :value="filter2">{{filter2}}
 							</option>
-						</select> -->
+						</select>
 						<!-- <label for="sort">Sort by</label>
 						<select id="sort" v-model="sortSelected" @change="sortFilter">
 							<option value="">none</option>
@@ -52,7 +46,7 @@
 						</select> -->
 					</div>	
 					<div class="search_box">
-						<!-- <label for="search1">Cerca</label> -->
+						<label for="search1">{{searchNumber}}</label>
 						<input ref="search1" placeholder="Cerca un film" 
 								v-model="searchInput"
 								@keyup.enter="getResponse">

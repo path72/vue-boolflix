@@ -7,6 +7,7 @@ var app = new Vue(
 		el: '#app',
 		data: {
 			searchInput			: '',
+			searchNumber		: null,
 			tmdbSearchUrl		: 'https://api.themoviedb.org/3/search',
 			tmdbGenreUrl		: 'http://api.themoviedb.org/3/genre',
 			tmdbMovieUrl		: 'https://api.themoviedb.org/3/movie',
@@ -16,25 +17,22 @@ var app = new Vue(
 			tmdbApiKey			: '9527ee72ac0381373914837a93bbd7d4',
 			tmdbLang			: 'it-IT',
 			tmdbList			: [],
-			tmdbGenreList		: [[],[]], 	// [ [0] movie, [1] tv ]
-			tmdbSearchGenreList	: [],
+			tmdbGenreList		: [[],[]], 	// [ [0] movie, [1] tv ]			
 			tmdbListIsReady		: false,
 			tmdbCastIsReady		: false,
 			overCard			: false,
 			castLength			: 6,		// number of displayed cast members
-			filterGenreSelected	: '',
+
 			displayList			: [],
-			// filter1Selected		: '', 	// parameter1 selected for filter
-			// filter2Selected		: '',	// parameter2 selected for filter
-			// filterLists			: {}, 	// object with parameter1: [ parameter2 value list ]
-			// displayItems			: [],	// displayed (sortable) data
-			// displayItemsAreReady: false,
+			filter1Selected		: '', 	// parameter1 selected for filter
+			filter2Selected		: '',	// parameter2 selected for filter
+			searchedFilters		: {}, // {}
 		},
 		methods: {
 			getResponse() {
 				if (this.searchInput && this.searchInput.trim()) {
-					this.filterGenreSelected = '';
-					this.tmdbSearchGenreList = [];
+					this.filter1Selected = '';
+					this.searchedFilters = {};
 					this.searchInput = this.searchInput.trim().replace(/\s+/g,'+');
 					// console.log(this.searchInput);
 					this.getTmdbData();
@@ -45,8 +43,8 @@ var app = new Vue(
 				/**
 				 *   	MOVIE				TV
 				 * !	title				name				!
-				 * 	 	genre_name			genre_name			new
-				 * 	 	cast				cast				new
+				 * *	genre_names			genre_names			* new	FILTER
+				 * * 	cast				cast				* new
 				 * ! 	original_title		original_name		!
 				 * ! 	release_date		first_air_date		!
 				 *   	original_language	original_language
@@ -67,14 +65,14 @@ var app = new Vue(
 							this.addCastNames(tvs,'tv');
 							this.tmdbList = [...mov,...tvs];
 
-							this.buildSearchedGenreList();
-
-							// l'organizzatore cognitivo preferito!
-							// this.buildFilterList(this.tmdbList); 
+							this.buildSearchedFilters('Genere');
+							// this.buildSearchedFilters('Cast');
 
 							// displayList != tmdbList
 							this.displayList = this.tmdbList;
 							// console.log(this.displayList);
+
+							this.searchNumber = this.displayList.length;
 
 							this.tmdbListIsReady = true;
 						})
@@ -165,38 +163,57 @@ var app = new Vue(
 						})
 					);
 			},
-			buildSearchedGenreList() {
+			buildSearchedFilters(filter) {
+				switch (filter) {
+					case 'Genere' : key = 'genre_names'; break;
+					// case 'Cast'   : key = 'cast'; break;
+					case '': break;
+				}
+				let filterList = [];
 				this.tmdbList.forEach((el)=>{
-				 	el.genre_names.forEach((gen)=>{
-						if (!this.tmdbSearchGenreList.includes(gen))
-						this.tmdbSearchGenreList.push(gen);
-					 });
+					el[key].forEach((value)=>{
+						if (!filterList.includes(value)) filterList.push(value);
+					});
 				});
+				this.searchedFilters[filter] = filterList;
 			},
-			filterGenre() {
-				if (this.filterGenreSelected) 
-					 this.displayList = this.tmdbList.filter((el)=> el.genre_names.includes(this.filterGenreSelected));
+			filter1Selection() {
+				this.filter2Selected='';
+				this.displayList = this.tmdbList;
+				this.searchNumber = this.displayList.length;
+			},
+			filter2Selection() {
+				if (this.filter2Selected) 
+					 this.displayList = this.tmdbList.filter((el)=> el.genre_names.includes(this.filter2Selected));
 				else this.displayList = this.tmdbList;
-			}
+				this.searchNumber = this.displayList.length;
+			},
 			// buildFilterList(items) {
-			// 	items.forEach((item)=>{ // item cycle
-			// 		for (key in item) { // parameter1 cycle of item
-			// 			if (this.filterLists[key] == undefined)
-			// 				this.filterLists[key] = []; // parameter2 values list
-			// 			if (!this.filterLists[key].includes(item[key])) 
-			// 				 this.filterLists[key].push(item[key]); // parameter2 values
-			// 		}
-			// 	});
-			// 	console.log(this.filterLists);
-			// 	this.displayItems = this.tmdbList; // filling displayed data
-			// 	if (this.displayItems.length > 0) this.displayItemsAreReady = true;
+				// items.forEach((item)=>{ // item cycle
+				// 	for (key in item) { // parameter1 cycle of item
+				// 		if (this.filterLists[key] == undefined)
+				// 			this.filterLists[key] = []; // parameter2 values list
+				// 		if (!this.filterLists[key].includes(item[key])) 
+				// 			 this.filterLists[key].push(item[key]); // parameter2 values
+				// 	}
+				// });
+				// console.log(this.filterLists);
+				// this.displayItems = this.tmdbList; // filling displayed data
+				// if (this.displayItems.length > 0) this.displayItemsAreReady = true;
 			// },
-			// cap(string) {
-			// 	return string;
-			// 	// return string[0].toUpperCase()+string.substring(1);
-			// }			
+			cap(string) {
+				return string;
+				// return string[0].toUpperCase()+string.substring(1);
+			}			
 		},
 		computed: {
+			// searchNumber: () => {
+				// if (this.displayList != [])
+					// return this.displayList.length;
+				// else return '';
+			// }
+		},
+		watch: {
 		},
 		created() {
 			this.getGenres();

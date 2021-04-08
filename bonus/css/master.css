@@ -77,7 +77,7 @@ ul {
 .header .search_box button:hover {
 	background-color: var(--red2);
 }
-.header .select_box {
+.header select {
 	margin-right: 20px;
 }
 
