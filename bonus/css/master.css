@@ -52,15 +52,22 @@ ul {
 	padding: 5px 15px;
 	background-color: var(--bg_dark_grey);
 }
-.header img {
+.header .left_header {
+	height: 100%;
+}
+.header .left_header img {
 	height: 100%;
 }
 .header .search_box input,
-.header .search_box button {
+.header .search_box button,
+.header select {
 	padding: 5px 10px;
 	border-radius: 5px;
 	border: 1px solid var(--red);
 	outline: none;
+}
+.header .select_box select {
+	max-width: 150px;
 }
 .header .search_box button {
 	color: var(--white);
@@ -69,6 +76,9 @@ ul {
 }
 .header .search_box button:hover {
 	background-color: var(--red2);
+}
+.header .select_box {
+	margin-right: 20px;
 }
 
 /****************************************************************
@@ -141,6 +151,10 @@ ul {
 .item_display .item_box .item_info_fade-enter,     /* transition in starting time */
 .item_display .item_box .item_info_fade-leave-to { /* transition out ending time */
 	opacity: 0;
+}
+.no_item_msg {
+	padding: 50px;
+	text-align: center;
 }
 
 /****************************************************************

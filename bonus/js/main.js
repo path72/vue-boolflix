@@ -16,15 +16,24 @@ var app = new Vue(
 			tmdbApiKey			: '9527ee72ac0381373914837a93bbd7d4',
 			tmdbLang			: 'it-IT',
 			tmdbList			: [],
-			tmdbGenreList		: [[],[]], // movie,tv genres
+			tmdbGenreList		: [[],[]], // [ [0] movie, [1] tv ]
+			tmdbMergedGenreList	: [],
 			tmdbListIsReady		: false,
 			tmdbCastIsReady		: false,
 			overCard			: false,
-			castLength			: 5
+			castLength			: 5,
+			filterGenreSelected	: '',
+			displayList			: [],
+			// filter1Selected		: '', 	// parameter1 selected for filter
+			// filter2Selected		: '',	// parameter2 selected for filter
+			// filterLists			: {}, 	// object with parameter1: [ parameter2 value list ]
+			// displayItems		: [],	// displayed (sortable) data
+			// displayItemsAreReady: false,
 		},
 		methods: {
 			getResponse() {
 				if (this.searchInput && this.searchInput.trim()) {
+					this.filterGenreSelected = '';
 					this.searchInput = this.searchInput.trim().replace(/\s+/g,'+');
 					// console.log(this.searchInput);
 					this.getTmdbData();
@@ -56,7 +65,14 @@ var app = new Vue(
 							this.addGenreNames(tvs,this.tmdbGenreList[1]); 
 							this.addCastNames(tvs,'tv');
 							this.tmdbList = [...mov,...tvs];
-							// console.log(this.tmdbList);
+
+							// l'organizzatore cognitivo preferito!
+							// this.buildFilterList(this.tmdbList); 
+
+							// displayList != tmdbList
+							this.displayList = this.tmdbList;
+							// console.log(this.displayList);
+
 							this.tmdbListIsReady = true;
 						})
 					);
@@ -142,9 +158,41 @@ var app = new Vue(
 							// console.log(this.tmdbGenreList[0]);
 							this.tmdbGenreList[1] = resps[1].data.genres;
 							// console.log(this.tmdbGenreList[1]);
+							this.mergedGenreList();
+							// console.log(this.tmdbMergedGenreList);						
 						})
 					);
+			},
+			mergedGenreList() {
+				for (let i=0; i<this.tmdbGenreList.length; i++)
+					this.tmdbGenreList[i].forEach((el)=>{
+						if(!this.tmdbMergedGenreList.includes(el.name)) 
+							this.tmdbMergedGenreList.push(el.name); 					
+					});
+				this.tmdbMergedGenreList.sort();
+			},
+			filterGenre() {
+				if (this.filterGenreSelected) 
+					 this.displayList = this.displayList.filter((el)=> el.genre_names.includes(this.filterGenreSelected));
+				else this.displayList = this.tmdbList;
 			}
+			// buildFilterList(items) {
+			// 	items.forEach((item)=>{ // item cycle
+			// 		for (key in item) { // parameter1 cycle of item
+			// 			if (this.filterLists[key] == undefined)
+			// 				this.filterLists[key] = []; // parameter2 values list
+			// 			if (!this.filterLists[key].includes(item[key])) 
+			// 				 this.filterLists[key].push(item[key]); // parameter2 values
+			// 		}
+			// 	});
+			// 	console.log(this.filterLists);
+			// 	this.displayItems = this.tmdbList; // filling displayed data
+			// 	if (this.displayItems.length > 0) this.displayItemsAreReady = true;
+			// },
+			// cap(string) {
+			// 	return string;
+			// 	// return string[0].toUpperCase()+string.substring(1);
+			// }			
 		},
 		computed: {
 		},
