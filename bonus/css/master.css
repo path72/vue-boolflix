@@ -77,6 +77,9 @@ ul {
 .header .search_box button:hover {
 	background-color: var(--red2);
 }
+.header .search_box label {
+	padding-right: 15px;
+}
 .header select {
 	margin-right: 20px;
 }

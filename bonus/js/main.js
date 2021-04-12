@@ -16,17 +16,16 @@ var app = new Vue(
 			tmdbPosterThumbUrl	: 'https://image.tmdb.org/t/p/w342',
 			tmdbApiKey			: '9527ee72ac0381373914837a93bbd7d4',
 			tmdbLang			: 'it-IT',
-			tmdbList			: [],
+			tmdbList			: [],		// complete result list 
 			tmdbGenreList		: [[],[]], 	// [ [0] movie, [1] tv ]			
 			tmdbListIsReady		: false,
 			tmdbCastIsReady		: false,
 			overCard			: false,
 			castLength			: 6,		// number of displayed cast members
-
-			displayList			: [],
-			filter1Selected		: '', 	// parameter1 selected for filter
-			filter2Selected		: '',	// parameter2 selected for filter
-			searchedFilters		: {}, // {}
+			displayList			: [],		// displayed (filtered) list
+			filter1Selected		: '', 		// parameter1 selected for filter (Genre, ...)
+			filter2Selected		: '',		// parameter2 selected for filter (Genre1, ...)
+			searchedFilters		: {}, 		// {parameter1: parameter2, parameter1: parameter2, ... }
 		},
 		methods: {
 			getResponse() {
